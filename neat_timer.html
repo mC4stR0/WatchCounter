@@ -66,7 +66,7 @@
     </div>
 
     <!-- Imagen derecha -->
-    <img src="mbyja_logo.png" alt="Imagen derecha" class="side-image">
+    <img src="mbyja_logo.png" alt="Imagen derecha" class="side-image" id="mbyjaLogo">
   </div>
 
   <script>
@@ -79,6 +79,18 @@
     const totalSets = 12;
     const timerDisplay = document.getElementById('timer');
     const setCounter = document.getElementById('setCounter');
+
+    // Obtener la imagen
+    const mbyjaLogo = document.getElementById('mbyjaLogo');
+
+    // Agregar un evento de clic a la imagen
+    mbyjaLogo.addEventListener('click', () => {
+      if (currentSet <= totalSets) {
+        startTimer();   // Iniciar el temporizador
+        updateSetCounter();  // Actualizar el contador de sets
+        currentSet++;   // Incrementar el contador de sets
+      }
+    });
 
     function startTimer() {
       if (currentSet > totalSets) {
