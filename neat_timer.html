@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TORNEO MBYJA FEBRERO 2025</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* Oculta el scroll vertical */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgb(255, 255, 255);
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      color: white;
+    }
+    h1 {
+      color: rgb(0, 0, 0);
+    }
+    .timer {
+      font-size: 10em; /* Tamaño más grande para el reloj */
+      margin: 20px 0;
+    }
+    .preparation, .timer, .set-counter {
+      color: red; 
+    }
+    .set-counter {
+      font-weight: bold;  
+      font-size: 2em; /* Tamaño más grande para el contador de sets */
+    }
+    .competition {
+      color: green; 
+    }
+    .warning {
+      color: rgb(223, 148, 35); 
+    }
+    .container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px; /* Espacio entre las imágenes y el contador */
+    }
+    .side-image {
+      width: 20%; /* Tamaño del 30% para las imágenes */
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Imagen izquierda -->
+    <img src="FederacionParaguayaDeTiroConArco.png" alt="Imagen izquierda" class="side-image">
+    
+    <!-- Contenido central -->
+    <div>
+      <h2 style="color: black; font-size: x-large;">TORNEO MBYJA FEBRERO-2025</h2>
+      <div class="timer" id="timer">00:00</div>
+      <div class="set-counter" id="setCounter">1/12</div>
+    </div>
+
+    <!-- Imagen derecha -->
+    <img src="mbyja_logo.png" alt="Imagen derecha" class="side-image">
+  </div>
+
+  <script>
+    let timerInterval;
+    let timeLeft = 0;
+    let isPreparation = true;
+    let isCompetition = false;
+    let isWarning = false;
+    let currentSet = 1;
+    const totalSets = 12;
+    const timerDisplay = document.getElementById('timer');
+    const setCounter = document.getElementById('setCounter');
+
+    function startTimer() {
+      if (currentSet > totalSets) {
+        alert("Todos los sets han sido completados.");
+        return;
+      }
+
+      isPreparation = true;
+      isCompetition = false;
+      isWarning = false;
+      timeLeft = 10; // 10 segundos de preparación
+      timerDisplay.className = 'timer preparation'; // Color rojo
+      updateTimerDisplay();
+
+      // Iniciar temporizador
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+
+        if (isPreparation && timeLeft === 0) {
+          // Fin de la preparación
+          isPreparation = false;
+          isCompetition = true;
+          timeLeft = 60; // 1 minuto de competencia
+          timerDisplay.className = 'timer competition'; // Color verde
+          playSound('initSoundAlarm.mp3', 1); // Sonido al finalizar la preparación
+        } else if (isCompetition && timeLeft === 20) {
+          // Últimos 20 segundos de competencia
+          isWarning = true;
+          timerDisplay.className = 'timer warning'; // Color amarillo
+          playSound('initSoundAlarm.mp3', 3); // Sonido de advertencia
+        } else if (isCompetition && timeLeft === 0) {
+          // Fin de la competencia
+          clearInterval(timerInterval);
+          playSound('initSoundAlarm.mp3', 8); // Sonido al finalizar
+        }
+      }, 1000);
+
+      // Sonido al iniciar la preparación
+      playSound('initSoundAlarm.mp3', 3);
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      timeLeft = 0;
+      isPreparation = true;
+      isCompetition = false;
+      isWarning = false;
+      timerDisplay.className = 'timer preparation'; // Reiniciar color
+      updateTimerDisplay();
+      currentSet = 1; // Reiniciar el contador de sets
+      updateSetCounter();
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function updateSetCounter() {
+      setCounter.textContent = `${currentSet}/${totalSets}`;
+    }
+
+    function playSound(soundFile, duration) {
+      const audio = new Audio(soundFile);
+      audio.play();
+      setTimeout(() => {
+        audio.pause();
+        audio.currentTime = 0;
+      }, duration * 1000);
+    }
+
+    // Manejo de teclas
+    document.addEventListener('keydown', (event) => {
+      if (event.ctrlKey && event.key === 'i') {
+        if (currentSet <= totalSets) {
+          startTimer();
+          updateSetCounter();
+          currentSet++; // Incrementar el contador de sets al presionar Control + I
+        }
+      } else if (event.ctrlKey && event.key === 'y') {
+        resetTimer();
+      }
+    });
+  </script>
+</body>
+</html>
